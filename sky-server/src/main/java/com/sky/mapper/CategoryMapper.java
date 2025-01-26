@@ -34,4 +34,7 @@ public interface CategoryMapper {
 
     @Delete("delete from category where id = #{id}")
     void delete(Long id);
+
+    @Select("select * from category where id = #{id}")
+    Category getById(Long id);
 }

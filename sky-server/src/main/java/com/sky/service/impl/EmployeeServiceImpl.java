@@ -162,7 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
         Employee employee = Employee.builder()
-                .id(passwordEditDTO.getEmpId())
+                .id(BaseContext.getCurrentId())
                 .password(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()))
                 .build();
         employeeMapper.update(employee);
