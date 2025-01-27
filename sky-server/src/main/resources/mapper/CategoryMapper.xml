@@ -14,6 +14,18 @@
         </where>
         order by sort,create_time desc
     </select>
+    <select id="listQuery" resultType="com.sky.entity.Category">
+        select * from category
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
     <update id="update">
         update category
         <set>

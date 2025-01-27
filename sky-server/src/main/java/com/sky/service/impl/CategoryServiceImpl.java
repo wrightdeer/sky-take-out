@@ -3,7 +3,6 @@ package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.StatusConstant;
-import com.sky.context.BaseContext;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
@@ -17,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,11 +31,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 根据类型查询
+     *
      * @param type
+     * @param status
      * @return
      */
-    public List<Category> list(Integer type) {
-        return categoryMapper.listQuery(type);
+    public List<Category> list(Integer type, Integer status) {
+        return categoryMapper.listQuery(type, status);
     }
 
     /**
@@ -107,5 +106,10 @@ public class CategoryServiceImpl implements CategoryService {
         BeanUtils.copyProperties(categoryDTO, category);
 
         categoryMapper.update(category);
+    }
+
+    @Override
+    public List<Category> list(Integer type) {
+        return categoryMapper.listQuery(type,null);
     }
 }

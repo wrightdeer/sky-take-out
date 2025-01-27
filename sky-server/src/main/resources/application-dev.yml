@@ -1,8 +1,8 @@
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    host: localhost
-    port: 3306
+    host: your-host
+    port: your-port
     database: your-database
     username: your-username
     password: your-password
@@ -16,3 +16,9 @@ sky:
     port: your-port
     password: your-password
     database: your-database
+  wechat:
+    appid: your-appid
+    secret: your-secret
+  jwt:
+    admin-secret-key: your-secret-key
+    user-secret-key: your-secret-key
