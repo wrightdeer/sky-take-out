@@ -57,6 +57,7 @@ public interface DishService {
 
     /**
      * 根据分类id查询菜品及口味
+     * 用户端接口，作缓存处理
      *
      * @param categoryId
      * @return

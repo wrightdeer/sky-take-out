@@ -33,6 +33,7 @@
                 update_user = #{updateUser},
             </if>
         </set>
+        where id = #{id}
     </update>
     <delete id="deleteBatch">
         delete from setmeal where id in
