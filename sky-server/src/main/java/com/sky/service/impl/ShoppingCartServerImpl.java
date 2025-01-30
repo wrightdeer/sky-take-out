@@ -42,7 +42,7 @@ public class ShoppingCartServerImpl implements ShoppingCartServer {
             // 获取购物车中菜品或套餐的id
             Long id = ids.get(0);
             // 令指定的菜品或套餐的数量加1
-            shoppingcartMapper.addNumById(id);
+            shoppingcartMapper.updateNumById(id, 1);
             return;
         }
 
@@ -65,5 +65,49 @@ public class ShoppingCartServerImpl implements ShoppingCartServer {
         shoppingCart.setCreateTime(LocalDateTime.now());
         shoppingcartMapper.insert(shoppingCart);
 
+    }
+
+    /**
+     * 查询购物车
+     * @return
+     */
+    public List<ShoppingCart> showShoppingCart() {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        return shoppingcartMapper.list(shoppingCart);
+    }
+
+    /**
+     * 删除购物车
+     * @param shoppingCartDTO
+     */
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        // 首先查询出目标购物车项id
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        List<ShoppingCart> list = shoppingcartMapper.list(shoppingCart);
+
+        // 如果购物车中不存在，则直接返回
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+
+        // 如果购物车中存在，且数量为1，则删除该购物车项
+        if (list.get(0).getNumber() == 1) {
+            shoppingcartMapper.deleteById(list.get(0).getId());
+            return;
+        }else {
+            // 如果购物车中存在，且数量大于1，则数量减1
+            shoppingcartMapper.updateNumById(list.get(0).getId(), -1);
+        }
+
+    }
+
+    /**
+     * 清空购物车
+     */
+    public void clean() {
+        shoppingcartMapper.deleteByUserId(BaseContext.getCurrentId());
     }
 }
