@@ -29,6 +29,7 @@ public class AddressBookServiceImpl implements AddressBookService {
      */
     public void add(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
+        addressBook.setIsDefault(0);
         addressBookMapper.insert(addressBook);
     }
 

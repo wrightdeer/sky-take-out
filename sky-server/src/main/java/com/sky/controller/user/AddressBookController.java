@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.constant.MessageConstant;
 import com.sky.entity.AddressBook;
 import com.sky.result.Result;
 import com.sky.service.AddressBookService;
@@ -60,7 +61,7 @@ public class AddressBookController {
     public Result<AddressBook> getDefault(){
         log.info("查询默认地址");
         AddressBook addressBook = addressBookService.getDefault();
-        return Result.success(addressBook);
+        return addressBook == null ? Result.error(MessageConstant.DEFAULT_ADDRESS_NOT_FOUND) : Result.success(addressBook);
     }
 
     /**
