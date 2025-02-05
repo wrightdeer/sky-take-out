@@ -14,6 +14,7 @@ import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.utils.BaiduMapUtil;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,18 +51,33 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private WebSocketServer webSocketServer;
+    @Autowired
+    private BaiduMapUtil baiduMapUtil;
+
     /**
      * 用户下单
+     *
      * @param ordersSubmitDTO
      * @return
      */
     @Transactional
-    public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
+    public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) throws IOException {
         // 处理业务异常（地址簿为空、购物车为空）
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
-        if (addressBook == null){
+        if (addressBook == null) {
             // 抛出业务异常
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+        }
+        String address = addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail();
+
+        // 处理业务异常（客户地址超出配送范围）
+        String shopAddress = baiduMapUtil.getShopAddress();
+        String address1 = baiduMapUtil.addressToLatLng(shopAddress);
+        String address2 = baiduMapUtil.addressToLatLng(address);
+        Integer distance = baiduMapUtil.calculateDistance(address1, address2);
+        if (distance == null || distance > 5000) {
+            // 抛出业务异常
+            throw new OrderBusinessException(MessageConstant.CANNOT_DELIVER_TO_THE_ADDRESS);
         }
 
         ShoppingCart shoppingCart = new ShoppingCart();
@@ -68,14 +85,14 @@ public class OrderServiceImpl implements OrderService {
         String username = userMapper.getById(userId).getName();
         shoppingCart.setUserId(userId);
         List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
-        if (shoppingCartList == null || shoppingCartList.isEmpty()){
+        if (shoppingCartList == null || shoppingCartList.isEmpty()) {
             // 抛出业务异常
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
 
         // 向订单表插入一条数据
         Orders orders = new Orders();
-        BeanUtils.copyProperties(ordersSubmitDTO,orders);
+        BeanUtils.copyProperties(ordersSubmitDTO, orders);
         orders.setOrderTime(LocalDateTime.now());
         orders.setPayStatus(Orders.UN_PAID);
         orders.setStatus(Orders.PENDING_PAYMENT);
@@ -84,7 +101,6 @@ public class OrderServiceImpl implements OrderService {
         orders.setConsignee(addressBook.getConsignee());
         orders.setUserId(userId);
         orders.setUserName(username);
-        String address = addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail();
         orders.setAddress(address);
         orderMapper.insert(orders);
 
@@ -92,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetailList = new ArrayList<>();
         for (ShoppingCart cart : shoppingCartList) {
             OrderDetail orderDetail = new OrderDetail();
-            BeanUtils.copyProperties(cart,orderDetail);
+            BeanUtils.copyProperties(cart, orderDetail);
             orderDetail.setOrderId(orders.getId());
             orderDetailList.add(orderDetail);
         }
@@ -139,7 +155,7 @@ public class OrderServiceImpl implements OrderService {
 
         return vo;*/
         // 由于没有企业账号，无法调用微信支付接口，所以暂时跳过支付，更新订单状态
-        Long id = orderMapper.getIdByUserIdAndNumber(userId,ordersPaymentDTO.getOrderNumber());
+        Long id = orderMapper.getIdByUserIdAndNumber(userId, ordersPaymentDTO.getOrderNumber());
         Orders orders = Orders.builder()
                 .id(id)
                 .status(Orders.TO_BE_CONFIRMED)
@@ -152,12 +168,12 @@ public class OrderServiceImpl implements OrderService {
         Map map = new HashMap();
         map.put("type", 1); // 1 来单提醒 2 客户催单
         map.put("orderId", id);
-        map.put("content", "订单号："+ordersPaymentDTO.getOrderNumber());
+        map.put("content", "订单号：" + ordersPaymentDTO.getOrderNumber());
 
         webSocketServer.sendToAllClient(JSON.toJSONString(map));
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code","ORDERPAID");
+        jsonObject.put("code", "ORDERPAID");
 
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
@@ -187,13 +203,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 分页查询订单
+     *
      * @param page
      * @param pageSize
      * @param status
      * @return
      */
     public PageResult pageQuery(int page, int pageSize, Integer status) {
-        PageHelper.startPage(page,pageSize);
+        PageHelper.startPage(page, pageSize);
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setStatus(status);
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
@@ -201,13 +218,13 @@ public class OrderServiceImpl implements OrderService {
         List<OrderVO> orderVOList = new ArrayList<>();
         String username = userMapper.getById(BaseContext.getCurrentId()).getName();
 
-        if (pageInfo != null){
+        if (pageInfo != null) {
             List<Orders> ordersList = pageInfo.getResult();
             for (Orders orders : ordersList) {
                 Long ordersId = orders.getId();
                 List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(ordersId);
                 OrderVO orderVO = new OrderVO();
-                BeanUtils.copyProperties(orders,orderVO);
+                BeanUtils.copyProperties(orders, orderVO);
                 orderVO.setOrderDetailList(orderDetailList);
                 orderVO.setUserName(username);
                 orderVOList.add(orderVO);
@@ -219,18 +236,19 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单详情
+     *
      * @param id
      * @return
      */
     public OrderVO getOrderDetail(Long id) {
         Orders orders = orderMapper.getById(id);
-        if (orders != null){
+        if (orders != null) {
             Long userId = orders.getUserId();
             String username = userMapper.getById(userId).getName();
             List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
             OrderVO orderVO = new OrderVO();
             orderVO.setUserName(username);
-            BeanUtils.copyProperties(orders,orderVO);
+            BeanUtils.copyProperties(orders, orderVO);
             orderVO.setOrderDetailList(orderDetailList);
             return orderVO;
         }
@@ -239,21 +257,22 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 取消订单
+     *
      * @param id
      */
     public void cancel(Long id) {
         Orders orders = orderMapper.getById(id);
-        if (orders != null){
-            if(orders.getPayStatus()==Orders.PAID){
+        if (orders != null) {
+            if (orders.getPayStatus() == Orders.PAID) {
                 // 执行退款
 
                 // 设置订单支付状态为退款
                 orders.setPayStatus(Orders.REFUND);
             }
             LocalDateTime orderTime = orders.getOrderTime();
-            if (LocalDateTime.now().isAfter(orderTime.plusMinutes(15))){
+            if (LocalDateTime.now().isAfter(orderTime.plusMinutes(15))) {
                 orders.setCancelReason("支付超时");
-            }else {
+            } else {
                 orders.setCancelReason("用户取消");
             }
             orders.setStatus(Orders.CANCELLED);
@@ -263,14 +282,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
-        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<Orders> pageInfo = (Page<Orders>) orderMapper.list(ordersPageQueryDTO);
-        if (pageInfo != null){
+        if (pageInfo != null) {
             List<Orders> ordersList = pageInfo.getResult();
             List<OrderVO> orderVOList = new ArrayList<>();
             for (Orders orders : ordersList) {
                 OrderVO orderVO = new OrderVO();
-                BeanUtils.copyProperties(orders,orderVO);
+                BeanUtils.copyProperties(orders, orderVO);
                 List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
                 StringBuilder detailsStringBuilder = new StringBuilder();
                 for (OrderDetail orderDetail : orderDetails) {
@@ -287,6 +306,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 再来一单
+     *
      * @param id
      */
     @Transactional
@@ -320,6 +340,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单统计
+     *
      * @return
      */
     public OrderStatisticsVO statistics() {
@@ -328,6 +349,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 接单
+     *
      * @param id
      */
     public void confirm(Long id) {
@@ -340,6 +362,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 派送订单
+     *
      * @param id
      */
     public void delivery(Long id) {
@@ -352,6 +375,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 拒单
+     *
      * @param ordersRejectionDTO
      */
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
@@ -367,6 +391,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 完成订单
+     *
      * @param id
      */
     public void complete(Long id) {
@@ -380,6 +405,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 取消订单
+     *
      * @param ordersCancelDTO
      */
     public void cancel(OrdersCancelDTO ordersCancelDTO) {
@@ -394,6 +420,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 催单
+     *
      * @param id
      */
     public void reminder(Long id) {
@@ -401,15 +428,15 @@ public class OrderServiceImpl implements OrderService {
         String orderNumber = orderMapper.getById(id).getNumber();
 
         // 校验订单是否存在
-        if (orderNumber == null){
+        if (orderNumber == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
 
         // 构建推送消息
         Map map = new HashMap();
-        map.put("type",2);
-        map.put("orderId",id);
-        map.put("content","订单号：" + orderNumber);
+        map.put("type", 2);
+        map.put("orderId", id);
+        map.put("content", "订单号：" + orderNumber);
 
         // 通过websocket向客户端发送消息
         webSocketServer.sendToAllClient(JSON.toJSONString(map));

@@ -61,3 +61,7 @@ sky:
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
+  map:
+    address: ${sky.map.address}
+    ak: ${sky.map.ak}
+    output: json

@@ -22,3 +22,6 @@ sky:
   jwt:
     admin-secret-key: your-secret-key
     user-secret-key: your-secret-key
+  map:
+    address: your-address
+    ak: your-ak
