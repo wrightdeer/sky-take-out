@@ -23,8 +23,8 @@ public class ShoppingCartController {
 
     /**
      * 添加购物车
-     * @param shoppingCartDTO
-     * @return
+     * @param shoppingCartDTO 购物车数据传输对象，包含要添加的商品信息
+     * @return 添加结果，成功返回Result.success()
      */
     @PostMapping("/add")
     @ApiOperation("添加购物车")
@@ -36,7 +36,8 @@ public class ShoppingCartController {
 
     /**
      * 减少购物车
-     * @return
+     * @param shoppingCartDTO 购物车数据传输对象，包含要减少的商品信息
+     * @return 减少结果，成功返回Result.success()
      */
     @PostMapping("/sub")
     @ApiOperation("减少购物车")
@@ -47,7 +48,7 @@ public class ShoppingCartController {
     }
     /**
      * 查看购物车
-     * @return
+     * @return 购物车商品列表，成功返回Result.success(list)
      */
     @GetMapping("/list")
     @ApiOperation("查询购物车")
@@ -59,7 +60,7 @@ public class ShoppingCartController {
 
     /**
      * 清空购物车
-     * @return
+     * @return 清空结果，成功返回Result.success()
      */
     @DeleteMapping("/clean")
     @ApiOperation("清空购物车")

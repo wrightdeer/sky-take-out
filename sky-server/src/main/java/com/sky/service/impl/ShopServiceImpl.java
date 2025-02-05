@@ -12,7 +12,7 @@ public class ShopServiceImpl implements ShopService {
     private RedisTemplate redisTemplate;
     /**
      * 设置店铺状态
-     * @param status
+     * @param status 店铺状态，0表示关闭，1表示开启
      */
     public void setStatus(Integer status) {
         redisTemplate.opsForValue().set(KEY, status);
@@ -20,7 +20,7 @@ public class ShopServiceImpl implements ShopService {
 
     /**
      * 获取店铺状态
-     * @return
+     * @return 店铺状态，0表示关闭，1表示开启
      */
     public Integer getStatus() {
         return  (Integer) redisTemplate.opsForValue().get(KEY);

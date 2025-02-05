@@ -18,8 +18,8 @@ public class ComonServiceImpl implements ComonService {
     /**
      * 文件上传
      *
-     * @param file
-     * @return
+     * @param file 文件对象
+     * @return 文件上传后返回的url
      */
     public String upload(MultipartFile file) {
         log.info("文件上传：{}",file);

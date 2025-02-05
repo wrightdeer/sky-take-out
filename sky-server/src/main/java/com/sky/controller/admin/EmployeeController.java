@@ -38,7 +38,7 @@ public class EmployeeController {
      * 登录
      *
      * @param employeeLoginDTO 用户名和密码
-     * @return id、用户名、姓名、jwt令牌
+     * @return 包含id、用户名、姓名、jwt令牌的EmployeeLoginVO对象
      */
     @PostMapping("/login")
     @ApiOperation(value = "员工登录")
@@ -67,7 +67,7 @@ public class EmployeeController {
     /**
      * 新增员工
      * @param employeeDTO 员工信息，包括id（可省略）、用户名、姓名、手机号、身份证、性别
-     * @return
+     * @return 成功信息
      */
     @PostMapping
     @ApiOperation(value = "新增员工")
@@ -80,8 +80,8 @@ public class EmployeeController {
 
     /**
      * 分页查询员工信息
-     * @param employeePageQueryDTO
-     * @return
+     * @param employeePageQueryDTO 分页查询条件，包括页码、每页大小、姓名、状态等
+     * @return 包含员工信息的PageResult对象
      */
     @GetMapping("/page")
     @ApiOperation(value = "分页查询员工信息")
@@ -93,9 +93,9 @@ public class EmployeeController {
 
     /**
      * 启用禁用员工账号
-     * @param status
-     * @param id
-     * @return
+     * @param status 员工状态，1表示启用，0表示禁用
+     * @param id 员工ID
+     * @return 成功信息
      */
     @PostMapping("/status/{status}")
     @ApiOperation(value = "启用禁用员工账号")
@@ -106,8 +106,8 @@ public class EmployeeController {
     }
     /**
      * 根据id查询员工信息
-     * @param id
-     * @return
+     * @param id 员工ID
+     * @return 包含员工信息的Employee对象
      */
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id查询员工信息")
@@ -119,8 +119,8 @@ public class EmployeeController {
 
     /**
      * 修改员工信息
-     * @param employeeDTO
-     * @return
+     * @param employeeDTO 员工信息，包括id、用户名、姓名、手机号、身份证、性别
+     * @return 成功信息
      */
     @PutMapping
     @ApiOperation(value = "修改员工信息")
@@ -132,8 +132,8 @@ public class EmployeeController {
 
     /**
      * 修改密码
-     * @param passwordEditDTO
-     * @return
+     * @param passwordEditDTO 密码修改信息，包括员工ID、旧密码、新密码
+     * @return 成功信息
      */
     @PutMapping("/editPassword")
     @ApiOperation(value = "修改密码")

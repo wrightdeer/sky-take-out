@@ -32,7 +32,9 @@ public class PayNotifyController {
     /**
      * 支付成功回调
      *
-     * @param request
+     * @param request  HttpServletRequest对象，包含支付成功回调的请求数据
+     * @param response HttpServletResponse对象，用于向微信发送响应
+     * @throws Exception 可能抛出的异常
      */
     @RequestMapping("/paySuccess")
     public void paySuccessNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -61,9 +63,9 @@ public class PayNotifyController {
     /**
      * 读取数据
      *
-     * @param request
-     * @return
-     * @throws Exception
+     * @param request HttpServletRequest对象，包含需要读取的数据
+     * @return 读取到的数据字符串
+     * @throws Exception 可能抛出的异常
      */
     private String readData(HttpServletRequest request) throws Exception {
         BufferedReader reader = request.getReader();
@@ -81,9 +83,9 @@ public class PayNotifyController {
     /**
      * 数据解密
      *
-     * @param body
-     * @return
-     * @throws Exception
+     * @param body 需要解密的数据字符串
+     * @return 解密后的文本字符串
+     * @throws Exception 可能抛出的异常
      */
     private String decryptData(String body) throws Exception {
         JSONObject resultObject = JSON.parseObject(body);
@@ -103,7 +105,9 @@ public class PayNotifyController {
 
     /**
      * 给微信响应
-     * @param response
+     *
+     * @param response HttpServletResponse对象，用于向微信发送响应
+     * @throws Exception 可能抛出的异常
      */
     private void responseToWeixin(HttpServletResponse response) throws Exception{
         response.setStatus(200);

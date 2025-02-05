@@ -42,8 +42,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * 员工登录
      *
-     * @param employeeLoginDTO
-     * @return
+     * @param employeeLoginDTO 包含用户名和密码的登录信息
+     * @return 包含员工登录信息和JWT令牌的EmployeeLoginVO对象
      */
     public EmployeeLoginVO login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
@@ -93,7 +93,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * 新增员工
      *
-     * @param employeeDTO
+     * @param employeeDTO 包含员工信息的EmployeeDTO对象
      */
     public void save(EmployeeDTO employeeDTO) {
 
@@ -115,8 +115,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * 分页查询员工信息
      *
-     * @param employeePageQueryDTO
-     * @return
+     * @param employeePageQueryDTO 包含分页查询条件的EmployeePageQueryDTO对象
+     * @return 包含分页结果的PageResult对象
      */
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         // 开始分页查询
@@ -132,8 +132,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * 启用禁用员工账号
      *
-     * @param status
-     * @param id
+     * @param status 员工账号的状态，1表示启用，0表示禁用
+     * @param id 员工ID
      */
     public void startOrStop(Integer status, Long id) {
         Employee employee = Employee.builder()
@@ -146,8 +146,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 根据id查询员工
-     * @param id
-     * @return
+     *
+     * @param id 员工ID
+     * @return 包含员工信息的Employee对象
      */
     @Override
     public Employee getById(Long id) {
@@ -158,7 +159,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 根据id修改员工信息
-     * @param employeeDTO
+     *
+     * @param employeeDTO 包含员工信息的EmployeeDTO对象
      */
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
@@ -168,7 +170,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 修改密码
-     * @param passwordEditDTO
+     *
+     * @param passwordEditDTO 包含旧密码和新密码的PasswordEditDTO对象
      */
     public void editPassword(PasswordEditDTO passwordEditDTO) {
         log.info("修改密码：{}", passwordEditDTO);

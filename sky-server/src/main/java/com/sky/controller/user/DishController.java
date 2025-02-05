@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,11 +22,16 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    /**
+     * 根据分类id查询菜品
+     * @param categoryId 分类ID
+     * @return 菜品列表
+     */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
-    public Result<List<DishVO>> list(Long categoryId) {
+    public Result<List<DishVO>> list(@RequestParam Long categoryId) {
         log.info("根据分类id查询菜品:{}", categoryId);
-       List<DishVO> dishVOs = dishService.listWithFlavor(categoryId);
+        List<DishVO> dishVOs = dishService.listWithFlavor(categoryId);
         return Result.success(dishVOs);
     }
 }

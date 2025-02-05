@@ -47,8 +47,8 @@ public class DishServiceImpl implements DishService {
     /**
      * 菜品分页查询
      *
-     * @param dishPageQueryDTO
-     * @return
+     * @param dishPageQueryDTO 分页查询条件
+     * @return 分页查询结果
      */
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
@@ -66,7 +66,7 @@ public class DishServiceImpl implements DishService {
     /**
      * 新增菜品
      *
-     * @param dishDTO
+     * @param dishDTO 菜品数据传输对象
      */
     @Transactional
     public void saveWithFlavor(DishDTO dishDTO) {
@@ -92,7 +92,7 @@ public class DishServiceImpl implements DishService {
     /**
      * 批量删除菜品
      *
-     * @param ids
+     * @param ids 菜品ID列表
      */
     @Transactional
     public void deleteBatch(List<Long> ids) {
@@ -126,8 +126,8 @@ public class DishServiceImpl implements DishService {
     /**
      * 起售/停售菜品
      *
-     * @param status
-     * @param id
+     * @param status 菜品状态
+     * @param id     菜品ID
      */
     public void setStatus(Integer status, Long id) {
         Dish dish = Dish.builder()
@@ -142,8 +142,8 @@ public class DishServiceImpl implements DishService {
     /**
      * 根据id查询菜品
      *
-     * @param id
-     * @return
+     * @param id 菜品ID
+     * @return 菜品详情
      */
     public DishVO getById(Long id) {
         Dish dish = dishMapper.getById(id);
@@ -158,7 +158,7 @@ public class DishServiceImpl implements DishService {
     /**
      * 修改菜品
      *
-     * @param dishDTO
+     * @param dishDTO 菜品数据传输对象
      */
     @Transactional
     public void update(DishDTO dishDTO) {
@@ -186,8 +186,8 @@ public class DishServiceImpl implements DishService {
     /**
      * 根据分类id查询菜品
      *
-     * @param categoryId
-     * @return
+     * @param categoryId 分类ID
+     * @return 菜品列表
      */
     public List<Dish> list(Long categoryId) {
         return dishMapper.list(categoryId);
@@ -197,8 +197,8 @@ public class DishServiceImpl implements DishService {
      * 根据id查询菜品及口味
      * 用户端接口，作缓存处理
      *
-     * @param categoryId
-     * @return
+     * @param categoryId 分类ID
+     * @return 菜品详情列表
      */
     public List<DishVO> listWithFlavor(Long categoryId) {
         // 从redis中获取菜品数据

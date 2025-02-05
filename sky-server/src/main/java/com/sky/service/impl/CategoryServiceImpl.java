@@ -32,9 +32,9 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * 根据类型查询
      *
-     * @param type
-     * @param status
-     * @return
+     * @param type 分类类型
+     * @param status 状态
+     * @return 分类列表
      */
     public List<Category> list(Integer type, Integer status) {
         return categoryMapper.listQuery(type, status);
@@ -42,8 +42,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 分页查询
-     * @param categoryPageQueryDTO
-     * @return
+     * @param categoryPageQueryDTO 查询条件
+     * @return 分页数量与列表数据
      */
     public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
         PageHelper.startPage(categoryPageQueryDTO.getPage(), categoryPageQueryDTO.getPageSize());
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 新增分类
-     * @param categoryDTO
+     * @param categoryDTO 分类信息
      */
     public void save(CategoryDTO categoryDTO) {
         Category category = new Category();
@@ -67,8 +67,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 启用禁用分类
-     * @param status
-     * @param id
+     * @param status 状态
+     * @param id 分类id
      */
     public void startOrStop(Integer status, Long id) {
         Category category = Category.builder()
@@ -80,7 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 删除分类
-     * @param id
+     * @param id 分类id
      */
     public void delete(Long id) {
         // 检查是否关联了菜品或套餐
@@ -99,7 +99,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 修改分类
-     * @param categoryDTO
+     *
+     * @param categoryDTO 分类信息
      */
     public void update(CategoryDTO categoryDTO) {
         Category category = new Category();
@@ -108,7 +109,11 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.update(category);
     }
 
-    @Override
+    /**
+     * 根据类型查询
+     * @param type 分类类型
+     * @return 分类列表
+     */
     public List<Category> list(Integer type) {
         return categoryMapper.listQuery(type,null);
     }

@@ -25,8 +25,8 @@ public class DishController {
 
     /**
      * 菜品分页查询
-     * @param dishPageQueryDTO
-     * @return
+     * @param dishPageQueryDTO 分页查询条件
+     * @return 分页查询结果
      */
     @GetMapping("/page")
     @ApiOperation("菜品分页查询")
@@ -38,8 +38,8 @@ public class DishController {
 
     /**
      * 新增菜品
-     * @param dishDTO
-     * @return
+     * @param dishDTO 菜品信息
+     * @return 操作结果
      */
     @PostMapping
     @ApiOperation("新增菜品")
@@ -51,8 +51,8 @@ public class DishController {
 
     /**
      * 删除菜品
-     * @param ids
-     * @return
+     * @param ids 菜品ID列表
+     * @return 操作结果
      */
     @DeleteMapping
     @ApiOperation("删除菜品")
@@ -64,9 +64,9 @@ public class DishController {
 
     /**
      * 起售停售
-     * @param status
-     * @param id
-     * @return
+     * @param status 状态码，1表示起售，0表示停售
+     * @param id 菜品ID
+     * @return 操作结果
      */
     @PostMapping("/status/{status}")
     @ApiOperation("起售停售")
@@ -75,6 +75,12 @@ public class DishController {
         dishService.setStatus(status, id);
         return Result.success();
     }
+
+    /**
+     * 根据id查询菜品
+     * @param id 菜品ID
+     * @return 菜品信息
+     */
     @GetMapping("/{id}")
     @ApiOperation("根据id查询菜品")
     public Result<DishVO> getById(@PathVariable Long id) {
@@ -82,6 +88,12 @@ public class DishController {
         DishVO dishVO = dishService.getById(id);
         return Result.success(dishVO);
     }
+
+    /**
+     * 修改菜品
+     * @param dishDTO 菜品信息
+     * @return 操作结果
+     */
     @PutMapping
     @ApiOperation("修改菜品")
     public Result update(@RequestBody DishDTO dishDTO) {
@@ -89,6 +101,12 @@ public class DishController {
         dishService.update(dishDTO);
         return Result.success();
     }
+
+    /**
+     * 根据分类id查询菜品
+     * @param categoryId 分类ID
+     * @return 菜品列表
+     */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
     public Result<List<Dish>> list(Long categoryId) {

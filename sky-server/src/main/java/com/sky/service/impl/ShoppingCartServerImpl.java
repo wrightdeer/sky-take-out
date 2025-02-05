@@ -28,7 +28,7 @@ public class ShoppingCartServerImpl implements ShoppingCartServer {
 
     /**
      * 添加购物车
-     * @param shoppingCartDTO
+     * @param shoppingCartDTO 购物车数据传输对象，包含菜品或套餐信息
      */
     public void add(ShoppingCartDTO shoppingCartDTO) {
         // 先判断购物车中是否有相同的菜品（口味也应该相同）或套餐
@@ -69,7 +69,7 @@ public class ShoppingCartServerImpl implements ShoppingCartServer {
 
     /**
      * 查询购物车
-     * @return
+     * @return 购物车列表
      */
     public List<ShoppingCart> showShoppingCart() {
         ShoppingCart shoppingCart = new ShoppingCart();
@@ -79,7 +79,7 @@ public class ShoppingCartServerImpl implements ShoppingCartServer {
 
     /**
      * 删除购物车
-     * @param shoppingCartDTO
+     * @param shoppingCartDTO 购物车数据传输对象，包含要删除的菜品或套餐信息
      */
     public void sub(ShoppingCartDTO shoppingCartDTO) {
         // 首先查询出目标购物车项id

@@ -23,8 +23,8 @@ public class UserController {
 
     /**
      * 微信登录
-     * @param userLoginDTO
-     * @return
+     * @param userLoginDTO 包含微信登录所需信息的数据传输对象
+     * @return 包含登录结果信息的Result对象，内部包含UserLoginVO对象
      */
     @PostMapping("/login")
     @ApiOperation(value = "微信登录")

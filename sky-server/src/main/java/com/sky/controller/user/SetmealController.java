@@ -26,8 +26,8 @@ public class SetmealController {
 
     /**
      * 根据分类id查询套餐
-     * @param categoryId
-     * @return
+     * @param categoryId 分类ID
+     * @return 包含指定分类ID的套餐列表的Result对象
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询套餐")
@@ -39,8 +39,8 @@ public class SetmealController {
     }
     /**
      * 根据套餐id查询包含的菜品
-     * @param id
-     * @return
+     * @param id 套餐ID
+     * @return 包含指定套餐ID的菜品列表的Result对象
      */
     @GetMapping("/dish/{id}")
     @ApiOperation("根据套餐id查询包含的菜品")

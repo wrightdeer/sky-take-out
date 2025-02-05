@@ -28,14 +28,12 @@ public class SetmealServiceImpl implements SetmealService {
     @Autowired
     private SetmealMapper setmealMapper;
     @Autowired
-    private CategoryMapper categoryMapper;
-    @Autowired
     private SetmealDishMapper setmealDishMapper;
 
     /**
      * 分页查询
-     * @param setmealPageQueryDTO
-     * @return
+     * @param setmealPageQueryDTO 分页查询条件DTO
+     * @return 分页查询结果
      */
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
@@ -46,7 +44,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     /**
      * 批量删除
-     * @param ids
+     * @param ids 要删除的套餐ID列表
      */
     public void deleteBatch(List<Long> ids) {
         // 判断套餐是否能够删除-套餐是否在起售中
@@ -60,7 +58,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     /**
      * 新增套餐
-     * @param setmealDTO
+     * @param setmealDTO 套餐DTO
      */
     @Transactional
     public void saveWithDish(SetmealDTO setmealDTO) {
@@ -81,8 +79,8 @@ public class SetmealServiceImpl implements SetmealService {
     /**
      * 根据id查询套餐
      *
-     * @param id
-     * @return
+     * @param id 套餐ID
+     * @return 套餐VO
      */
     public SetmealVO getById(Long id) {
         Setmeal setmeal = setmealMapper.getById(id);
@@ -94,7 +92,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     /**
      * 修改套餐
-     * @param setmealDTO
+     * @param setmealDTO 套餐DTO
      */
     @Transactional
     public void update(SetmealDTO setmealDTO) {
@@ -118,8 +116,8 @@ public class SetmealServiceImpl implements SetmealService {
 
     /**
      * 套餐起售停售
-     * @param status
-     * @param id
+     * @param status 状态码，1表示起售，0表示停售
+     * @param id 套餐ID
      */
     public void setStatus(Integer status, Long id) {
         Setmeal setmeal = Setmeal.builder()
@@ -128,10 +126,11 @@ public class SetmealServiceImpl implements SetmealService {
                 .build();
         setmealMapper.update(setmeal);
     }
+
     /**
      * 根据分类id查询已启用套餐
-     * @param categoryId
-     * @return
+     * @param categoryId 分类ID
+     * @return 已启用的套餐列表
      */
     public List<Setmeal> list(Long categoryId){
         return setmealMapper.list(categoryId);
@@ -139,8 +138,8 @@ public class SetmealServiceImpl implements SetmealService {
 
     /**
      * 根据套餐id查询包含的菜品
-     * @param id
-     * @return
+     * @param id 套餐ID
+     * @return 菜品列表
      */
     public List<DishItemVO> getDishItemById(Long id) {
         return setmealMapper.getDishItemBySetmealId(id);

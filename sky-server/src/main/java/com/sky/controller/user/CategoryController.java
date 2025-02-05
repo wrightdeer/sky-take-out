@@ -21,6 +21,12 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    /**
+     * 根据类型查询分类
+     * @param type 分类类型
+     * @return 包含指定类型的启用状态分类列表的结果对象
+     */
     @GetMapping("/list")
     @ApiOperation("根据类型查询分类")
     public Result<List<Category>> list(Integer type) {
