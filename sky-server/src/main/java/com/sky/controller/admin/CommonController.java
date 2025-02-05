@@ -24,8 +24,8 @@ public class CommonController {
     private ComonService comonService;
     /**
      * 文件上传
-     * @param file
-     * @return
+     * @param file 文件对象
+     * @return 文件路径
      */
     @PostMapping("/upload")
     @ApiOperation("文件上传")

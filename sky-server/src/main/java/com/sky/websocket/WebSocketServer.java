@@ -23,6 +23,9 @@ public class WebSocketServer {
 
     /**
      * 连接建立成功调用的方法
+     *
+     * @param session 当前会话对象
+     * @param sid     客户端标识符
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) {
@@ -34,6 +37,7 @@ public class WebSocketServer {
      * 收到客户端消息后调用的方法
      *
      * @param message 客户端发送过来的消息
+     * @param sid     客户端标识符
      */
     @OnMessage
     public void onMessage(String message, @PathParam("sid") String sid) {
@@ -43,7 +47,7 @@ public class WebSocketServer {
     /**
      * 连接关闭调用的方法
      *
-     * @param sid
+     * @param sid 客户端标识符
      */
     @OnClose
     public void onClose(@PathParam("sid") String sid) {
@@ -52,9 +56,9 @@ public class WebSocketServer {
     }
 
     /**
-     * 群发
+     * 群发消息给所有客户端
      *
-     * @param message
+     * @param message 要发送的消息
      */
     public void sendToAllClient(String message) {
         Collection<Session> sessions = sessionMap.values();

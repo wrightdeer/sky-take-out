@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户登录
-     * @param userLoginDTO
-     * @return
+     * @param userLoginDTO 包含用户登录信息的数据传输对象，包括微信登录code
+     * @return 用户登录成功后返回的视图对象，包含用户ID、openid和JWT令牌
      */
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
         // 调用微信接口服务，获取用户openid
@@ -79,8 +79,8 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据微信登录code获取微信openid
-     * @param code
-     * @return
+     * @param code 微信登录code
+     * @return 用户的openid，如果获取失败则返回null
      */
     private String getOpenid(String code) {
         Map<String, String> paramMap = new HashMap<>();

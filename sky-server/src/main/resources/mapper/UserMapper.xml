@@ -6,4 +6,20 @@
         insert into user (openid, name, phone, sex, id_number, avatar, create_time)
         values (#{openid}, #{name}, #{phone}, #{sex}, #{idNumber}, #{avatar}, #{createTime})
     </insert>
+    <select id="getUserDataByDays" resultType="java.util.Map">
+        <![CDATA[
+        WITH RECURSIVE DateRange AS (SELECT DATE_SUB(#{begin}, INTERVAL 1 DAY) AS date
+                                     UNION ALL
+                                     SELECT DATE_ADD(date, INTERVAL 1 DAY)
+                                     FROM DateRange
+                                     WHERE date < #{end})
+        SELECT dr.date,
+               COUNT(u.id) AS totalUsers
+        FROM DateRange dr
+                 LEFT JOIN
+             user u ON DATE(u.create_time) <= dr.date
+        GROUP BY dr.date
+        ORDER BY dr.date;
+        ]]>
+    </select>
 </mapper>

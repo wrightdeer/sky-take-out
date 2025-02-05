@@ -2,7 +2,6 @@ package com.sky.controller.admin;
 
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
-import com.sky.entity.Setmeal;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
@@ -26,8 +25,8 @@ public class SetmealController {
 
     /**
      * 套餐分页查询
-     * @param setmealPageQueryDTO
-     * @return
+     * @param setmealPageQueryDTO 分页查询参数
+     * @return 分页查询结果
      */
     @GetMapping("/page")
     @ApiOperation("套餐分页查询")
@@ -38,13 +37,11 @@ public class SetmealController {
     }
     /**
      * 套餐批量删除
-     * @param ids
-     * @return
+     * @param ids 要删除的套餐ID列表
+     * @return 删除结果
      */
     @DeleteMapping
     @ApiOperation("套餐批量删除")
-    // 删除套餐也不需要清理缓存，因为只有停售的套餐才能删除
-//    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result delete(@RequestParam List<Long> ids) {
         log.info("批量删除套餐：{}", ids);
         setmealService.deleteBatch(ids);
@@ -53,13 +50,11 @@ public class SetmealController {
 
     /**
      * 新增套餐
-     * @param setmealDTO
-     * @return
+     * @param setmealDTO 新增套餐的数据传输对象
+     * @return 新增结果
      */
     @PostMapping
     @ApiOperation("新增套餐")
-    // 新增套餐不需要清理，因为新增的套餐状态是禁用的，所以不需要清理缓存
-//    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")
     public Result add(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐：{}", setmealDTO);
         setmealService.saveWithDish(setmealDTO);
@@ -67,8 +62,8 @@ public class SetmealController {
     }
     /**
      * 根据id查询套餐
-     * @param id
-     * @return
+     * @param id 套餐ID
+     * @return 查询到的套餐详情
      */
     @GetMapping("/{id}")
     @ApiOperation("根据id查询套餐")
@@ -80,12 +75,11 @@ public class SetmealController {
 
     /**
      * 修改套餐
-     * @param setmealDTO
-     * @return
+     * @param setmealDTO 修改套餐的数据传输对象
+     * @return 修改结果
      */
     @PutMapping
     @ApiOperation("修改套餐")
-    //修改套餐清理全部缓存数据，因为套餐的分类可能有被修改，两个分类的数据都被影响，不方便获取旧分类的id，所以全部清理缓存
     @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐：{}", setmealDTO);
@@ -94,13 +88,12 @@ public class SetmealController {
     }
     /**
      * 套餐起售停售
-     * @param status
-     * @param id
-     * @return
+     * @param status 套餐状态（0停售，1起售）
+     * @param id 套餐ID
+     * @return 起售停售结果
      */
     @PostMapping("/status/{status}")
     @ApiOperation("套餐起售停售")
-    // 停售或启售套餐清理全部缓存数据，因为这里不方便获取是哪个分类下的菜品被停售了，所以全部清理缓存
     @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result startOrStop(@PathVariable Integer status, Long id) {
         log.info("套餐起售停售：{}", status);

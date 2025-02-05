@@ -16,7 +16,7 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     /**
      * 查询地址簿
-     * @return
+     * @return 地址簿列表
      */
     public List<AddressBook> list() {
         Long userId = BaseContext.getCurrentId();
@@ -25,7 +25,7 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     /**
      * 新增地址
-     * @param addressBook
+     * @param addressBook 地址对象
      */
     public void add(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
@@ -36,7 +36,7 @@ public class AddressBookServiceImpl implements AddressBookService {
     /**
      * 设置默认地址
      *
-     * @param addressBook
+     * @param addressBook 地址对象
      */
     public void setDefault(AddressBook addressBook) {
         // 首先将当前用户的所有地址设为非默认地址
@@ -48,7 +48,7 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     /**
      * 查询默认地址
-     * @return
+     * @return 默认地址对象
      */
     public AddressBook getDefault() {
         return addressBookMapper.getDefault(BaseContext.getCurrentId());
@@ -56,8 +56,8 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     /**
      * 根据id查询地址
-     * @param id
-     * @return
+     * @param id 地址ID
+     * @return 地址对象
      */
     public AddressBook getById(Long id) {
         return addressBookMapper.getById(id);
@@ -65,7 +65,7 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     /**
      * 修改地址
-     * @param addressBook
+     * @param addressBook 地址对象
      */
     public void update(AddressBook addressBook) {
         addressBookMapper.update(addressBook);
@@ -73,7 +73,7 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     /**
      * 删除地址
-     * @param id
+     * @param id 地址ID
      */
     public void delete(Long id) {
         addressBookMapper.delete(id);

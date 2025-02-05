@@ -3,10 +3,12 @@
 <mapper namespace="com.sky.mapper.OrderMapper">
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into orders (number, status, user_id, user_name, address_book_id, order_time, checkout_time, pay_method, pay_status,
+        insert into orders (number, status, user_id, user_name, address_book_id, order_time, checkout_time, pay_method,
+                            pay_status,
                             amount, remark, phone, address, consignee, estimated_delivery_time, delivery_status,
                             pack_amount, tableware_number, tableware_status)
-        values (#{number}, #{status}, #{userId}, #{userName}, #{addressBookId}, #{orderTime}, #{checkoutTime}, #{payMethod},
+        values (#{number}, #{status}, #{userId}, #{userName}, #{addressBookId}, #{orderTime}, #{checkoutTime},
+                #{payMethod},
                 #{payStatus}, #{amount}, #{remark}, #{phone}, #{address}, #{consignee}, #{estimatedDeliveryTime},
                 #{deliveryStatus}, #{packAmount}, #{tablewareNumber}, #{tablewareStatus})
     </insert>
@@ -68,6 +70,49 @@
                sum(case when status = 4 then 1 else 0 end) as deliveryInProgress
         from orders
     </select>
-
+    <select id="getTurnoverByDays" resultType="map">
+    <![CDATA[
+        WITH RECURSIVE DateSeries AS (SELECT #{begin} AS date
+                                      UNION ALL
+                                      SELECT DATE_ADD(date, INTERVAL 1 DAY)
+                                      FROM DateSeries
+                                      WHERE date < #{end})
+        SELECT ds.date,
+               COALESCE(SUM(o.amount), 0) AS turnover
+        FROM DateSeries ds
+                 LEFT JOIN
+             orders o ON DATE(o.delivery_time) = ds.date and o.status = 5
+        GROUP BY ds.date
+        ORDER BY ds.date;
+        ]]>
+    </select>
+    <select id="getOrderDataByDays" resultType="map">
+        <![CDATA[
+        WITH RECURSIVE DateSeries AS (SELECT #{begin} AS date
+                                      UNION ALL
+                                      SELECT DATE_ADD(date, INTERVAL 1 DAY)
+                                      FROM DateSeries
+                                      WHERE date < #{end})
+        SELECT ds.date,
+               COALESCE(COUNT(o.id), 0)                                   AS orderCount,
+               COALESCE(SUM(CASE WHEN o.status = 5 THEN 1 ELSE 0 END), 0) AS validOrderCount
+        FROM DateSeries ds
+                 LEFT JOIN
+             orders o ON DATE(o.order_time) = ds.date
+        GROUP BY ds.date
+        ORDER BY ds.date;
+        ]]>
+    </select>
+    <select id="getTop10" resultType="java.util.Map">
+        select od.name, sum(od.number) as number
+        from order_detail od,
+             orders o
+        where od.order_id = o.id
+          and o.status = 5
+          and date_format(o.order_time, '%Y-%m-%d') between #{begin} and #{end}
+        group by od.name
+        order by sum(od.number) desc
+        limit 10
+    </select>
 
 </mapper>

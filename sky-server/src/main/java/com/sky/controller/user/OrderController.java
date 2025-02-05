@@ -25,8 +25,9 @@ public class OrderController {
     private OrderService orderService;
     /**
      * 用户下单
-     * @param ordersSubmitDTO
-     * @return
+     * @param ordersSubmitDTO 下单信息数据传输对象
+     * @return 订单提交结果，包含订单信息
+     * @throws IOException 如果发生IO异常
      */
     @PostMapping("/submit")
     @ApiOperation("用户下单")
@@ -38,8 +39,9 @@ public class OrderController {
     /**
      * 订单支付
      *
-     * @param ordersPaymentDTO
-     * @return
+     * @param ordersPaymentDTO 支付信息数据传输对象
+     * @return 支付结果，包含预支付交易单信息
+     * @throws Exception 如果发生异常
      */
     @PutMapping("/payment")
     @ApiOperation("订单支付")
@@ -52,10 +54,10 @@ public class OrderController {
 
     /**
      * 历史订单分页查询
-     * @param page
-     * @param pageSize
-     * @param status
-     * @return
+     * @param page 页码
+     * @param pageSize 每页大小
+     * @param status 订单状态
+     * @return 分页查询结果，包含订单列表
      */
     @GetMapping("/historyOrders")
     @ApiOperation("分页查询历史订单")
@@ -67,8 +69,8 @@ public class OrderController {
 
     /**
      * 订单详情查询
-     * @param id
-     * @return
+     * @param id 订单ID
+     * @return 订单详情信息
      */
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("订单详情查询")
@@ -80,8 +82,8 @@ public class OrderController {
 
     /**
      * 取消订单
-     * @param id
-     * @return
+     * @param id 订单ID
+     * @return 取消结果
      */
     @PutMapping("/cancel/{id}")
     @ApiOperation("取消订单")
@@ -93,8 +95,8 @@ public class OrderController {
 
     /**
      * 再来一单
-     * @param id
-     * @return
+     * @param id 订单ID
+     * @return 再来一单结果
      */
     @PostMapping("/repetition/{id}")
     @ApiOperation("再来一单")
@@ -105,6 +107,11 @@ public class OrderController {
     }
     @GetMapping("/reminder/{id}")
     @ApiOperation("客户催单")
+    /**
+     * 客户催单
+     * @param id 订单ID
+     * @return 催单结果
+     */
     public Result reminder(@PathVariable Long id) {
         log.info("客户催单：{}", id);
         orderService.reminder(id);

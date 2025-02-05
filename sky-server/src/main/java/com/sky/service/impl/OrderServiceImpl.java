@@ -57,8 +57,9 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 用户下单
      *
-     * @param ordersSubmitDTO
-     * @return
+     * @param ordersSubmitDTO 订单提交数据传输对象
+     * @return 订单提交结果视图对象
+     * @throws IOException 可能抛出的IO异常
      */
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) throws IOException {
@@ -130,8 +131,9 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 订单支付
      *
-     * @param ordersPaymentDTO
-     * @return
+     * @param ordersPaymentDTO 订单支付数据传输对象
+     * @return 订单支付结果视图对象
+     * @throws Exception 可能抛出的异常
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 当前登录用户id
@@ -183,7 +185,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 支付成功，修改订单状态，由于未实现微信支付，此方法不会被调用
      *
-     * @param outTradeNo
+     * @param outTradeNo 外部交易号
      */
     public void paySuccess(String outTradeNo) {
 
@@ -204,10 +206,10 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 分页查询订单
      *
-     * @param page
-     * @param pageSize
-     * @param status
-     * @return
+     * @param page 页码
+     * @param pageSize 每页大小
+     * @param status 订单状态
+     * @return 分页结果对象
      */
     public PageResult pageQuery(int page, int pageSize, Integer status) {
         PageHelper.startPage(page, pageSize);
@@ -237,8 +239,8 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 订单详情
      *
-     * @param id
-     * @return
+     * @param id 订单ID
+     * @return 订单详情视图对象
      */
     public OrderVO getOrderDetail(Long id) {
         Orders orders = orderMapper.getById(id);
@@ -258,7 +260,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 取消订单
      *
-     * @param id
+     * @param id 订单ID
      */
     public void cancel(Long id) {
         Orders orders = orderMapper.getById(id);
@@ -281,6 +283,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * 分页查询订单
+     *
+     * @param ordersPageQueryDTO 订单分页查询数据传输对象
+     * @return 分页结果对象
+     */
     public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<Orders> pageInfo = (Page<Orders>) orderMapper.list(ordersPageQueryDTO);
@@ -307,7 +315,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 再来一单
      *
-     * @param id
+     * @param id 订单ID
      */
     @Transactional
     public void repetition(Long id) {
@@ -341,7 +349,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 订单统计
      *
-     * @return
+     * @return 订单统计视图对象
      */
     public OrderStatisticsVO statistics() {
         return orderMapper.statistics();
@@ -350,7 +358,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 接单
      *
-     * @param id
+     * @param id 订单ID
      */
     public void confirm(Long id) {
         Orders orders = Orders.builder()
@@ -363,7 +371,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 派送订单
      *
-     * @param id
+     * @param id 订单ID
      */
     public void delivery(Long id) {
         Orders orders = Orders.builder()
@@ -376,7 +384,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 拒单
      *
-     * @param ordersRejectionDTO
+     * @param ordersRejectionDTO 订单拒单数据传输对象
      */
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
         Orders orders = Orders.builder()
@@ -392,7 +400,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 完成订单
      *
-     * @param id
+     * @param id 订单ID
      */
     public void complete(Long id) {
         Orders orders = Orders.builder()
@@ -406,7 +414,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 取消订单
      *
-     * @param ordersCancelDTO
+     * @param ordersCancelDTO 订单取消数据传输对象
      */
     public void cancel(OrdersCancelDTO ordersCancelDTO) {
         Orders orders = Orders.builder()
@@ -421,7 +429,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 催单
      *
-     * @param id
+     * @param id 订单ID
      */
     public void reminder(Long id) {
         // 先获取订单号

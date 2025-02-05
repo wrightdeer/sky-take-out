@@ -17,8 +17,8 @@ public class ShopController {
     private ShopService shopService;
     /**
      * 设置店铺状态
-     * @param status
-     * @return
+     * @param status 店铺状态，1表示开启，0表示关闭
+     * @return 操作结果，包含成功信息
      */
     @PutMapping("/{status}")
     @ApiOperation("设置店铺状态")
@@ -30,7 +30,7 @@ public class ShopController {
 
     /**
      * 获取店铺状态
-     * @return
+     * @return 包含店铺状态的结果，状态值为1表示开启，0表示关闭
      */
     @GetMapping("/status")
     @ApiOperation("获取店铺状态")
