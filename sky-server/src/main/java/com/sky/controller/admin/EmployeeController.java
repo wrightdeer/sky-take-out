@@ -38,8 +38,6 @@ public class EmployeeController {
     @ApiOperation(value = "员工登录")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
-
-        // TODO 将生成令牌过程封装进业务层
         EmployeeLoginVO employeeLoginVO = employeeService.login(employeeLoginDTO);
 
         return Result.success(employeeLoginVO);
