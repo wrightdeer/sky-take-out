@@ -2,7 +2,6 @@ package com.sky.mapper;
 
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
-import com.sky.vo.OrderStatisticsVO;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -59,11 +58,6 @@ public interface OrderMapper {
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
 
-    /**
-     * 统计订单数量
-     * @return 订单统计信息对象
-     */
-    OrderStatisticsVO statistics();
 
     /**
      * 查询指定状态和下单时间的订单
@@ -100,4 +94,15 @@ public interface OrderMapper {
      */
     @MapKey("date")
     List<Map<String, Object>> getTop10(LocalDate begin, LocalDate end);
+
+    /**
+     * 根据状态查询订单数量
+     * @param status 订单状态
+     * @return 订单数量
+     */
+    @Select("select count(id) from orders where status = #{status}")
+    Integer countByStatus(Integer status);
+
+    @Select("select count(id) from orders where status = #{toBeConfirmed} and date_format(order_time, '%Y-%m-%d') = #{date}")
+    Integer countByStatusAndDate(Integer toBeConfirmed, LocalDate date);
 }

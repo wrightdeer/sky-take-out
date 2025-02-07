@@ -42,7 +42,7 @@ public class ReportServiceImpl implements ReportService {
 
         for (Map<String, Object> data : turnoverData) {
             String date = (String) data.get("date");
-            Long turnover = ((Number) data.get("turnover")).longValue();
+            Double turnover = ((BigDecimal) data.get("turnover")).doubleValue();
             dateList.add(date);
             turnoverList.add(String.valueOf(turnover));
         }

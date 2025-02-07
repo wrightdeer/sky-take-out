@@ -60,9 +60,17 @@
         order by s.create_time desc
     </select>
     <select id="countByStatusAndIds" resultType="java.lang.Long">
-        select count(id) from setmeal where status = #{status} and id in
-        <foreach collection="ids" open="(" close=")" separator="," item="id">
-            #{id}
-        </foreach>
+        select count(id) from setmeal
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
     </select>
 </mapper>

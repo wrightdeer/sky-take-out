@@ -41,4 +41,12 @@ public interface UserMapper {
      */
     @MapKey("date")
     List<Map<String, Object>> getUserDataByDays(LocalDate begin, LocalDate end);
+
+    /**
+     * 根据日期查询用户数量
+     * @param date 日期
+     * @return 用户数量
+     */
+    @Select("select count(id) from user where date_format(create_time, '%Y-%m-%d') = #{date}")
+    Integer getUserNumByDays(LocalDate date);
 }
