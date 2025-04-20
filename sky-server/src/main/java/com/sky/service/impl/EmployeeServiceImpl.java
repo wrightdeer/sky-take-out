@@ -12,9 +12,8 @@ import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
-import com.sky.exception.AccountLockedException;
-import com.sky.exception.AccountNotFoundException;
-import com.sky.exception.PasswordErrorException;
+import com.sky.exception.*;
+import com.sky.interceptor.utils.JwtRedisUtil;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -29,6 +28,7 @@ import org.springframework.util.DigestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -38,6 +38,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeMapper employeeMapper;
     @Autowired
     private JwtProperties jwtProperties;
+    @Autowired
+    private JwtRedisUtil jwtRedisUtil;
 
     /**
      * 员工登录
@@ -78,6 +80,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),
                 claims);
+        String userId = "admin:" + employee.getId();
+        jwtRedisUtil.saveJwtToRedis(userId, token, jwtProperties.getAdminTtl() / 1000);
 
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
@@ -133,7 +137,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 启用禁用员工账号
      *
      * @param status 员工账号的状态，1表示启用，0表示禁用
-     * @param id 员工ID
+     * @param id     员工ID
      */
     public void startOrStop(Integer status, Long id) {
         Employee employee = Employee.builder()
@@ -141,7 +145,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .id(id)
                 .build();
         employeeMapper.update(employee);
-        // TODO 禁用员工账号，需要清理 Redis 缓存的 jwt 令牌
+        if (Objects.equals(status, StatusConstant.DISABLE)) {
+            String userId = "admin:" + id;
+            jwtRedisUtil.removeJwtFromRedis(userId);
+        }
     }
 
     /**
@@ -190,6 +197,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .password(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()))
                 .build();
         employeeMapper.update(employee);
-        // TODO 密码修改成功，刷新 redis 缓存的 jwt 令牌
+        // 先清除旧token
+        String userId = "admin:" + BaseContext.getCurrentId();
+        jwtRedisUtil.removeJwtFromRedis(userId);
+        // 将本次的token存入redis
+        String jwt = BaseContext.getCurrentJwt();
+        jwtRedisUtil.saveJwtToRedis(userId, jwt, jwtProperties.getAdminTtl() / 1000);
     }
 }

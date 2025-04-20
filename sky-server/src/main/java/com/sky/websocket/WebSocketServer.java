@@ -15,6 +15,7 @@ import java.util.Map;
  * WebSocket服务
  */
 @Component
+
 @ServerEndpoint("/ws/{sid}")
 public class WebSocketServer {
 

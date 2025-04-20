@@ -52,7 +52,6 @@ public class EmployeeController {
     @ApiOperation(value = "员工退出")
     public Result<String> logout() {
         log.info("退出登录");
-        // TODO 删除Redis中的 jwt 令牌
         return Result.success();
     }
 
